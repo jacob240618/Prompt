@@ -8,16 +8,16 @@
                         # instructions
                         - 对于规则中要求的内容存在就不扣分
                         - 对于无法明确是否违反规则的内容跳过
-                        - 判断是否存在的规则，存在即通过
-                        - 规则涉及时间判断时，首先应根据<rule>的要求从<MedicalRecord>提取需要判断的时间为YYYY-MM-DD HH:mm的格式，然后再进行根据转换后的时间判断是否违反当前规则
+                        - 判断是否存在的规则，存在即通过,
+                        - 规则涉及时间判断时，首先应根据<rule>的要求从<MedicalRecord>中提取需要判断的时间并将提取到的时间转换为YYYY-MM-DD HH:mm格式，然后再进行根据转换后的时间判断是否违反<rule>
 
                         # 输出格式
-                        - 严格按照以下JSON格式输出：
+                        - 严格按照下面给出的JSON格式输出：
                         ```json 
                         [
                         {{
                         "break": 是否违规-True/False,
-                        "raw": "违反规则的原文片段，若违反的规则是缺失相关信息则此处输出无，若有原文片段则应提取出原文片段，片段过长则省略以...替换",
+                        "raw": "违反<rule>的<MedicalRecord>片段，若有<MedicalRecord>片段提取对应的片段，片段过长以...替换中间内容，若无对应片段或者违反<rule>是缺失信息则输出无",
                         "score": 根据规则应扣除的分数(负数),
                         "advice": "提供修改建议模板"
                         }}
@@ -27,15 +27,15 @@
                     },
                     {
                         "role": "user",
-                        "content": f"""
+                        "content": dedent(f"""
                         <rule>
                         {rule}
                         </rule>
-
+                        ###########################
                         <MedicalRecord>
                         {medical_record["content"]}
                         </MedicalRecord>
-                        """
+                        """).strip()
                     }
 ]
 
